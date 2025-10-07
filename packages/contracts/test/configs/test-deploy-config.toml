@@ -1,6 +1,6 @@
 [deploy_config]
 salt = "ethers phoenix"
-chains = ["zora_sepolia","base_sepolia","Lisk sepolia","mode_sepolia","superseed_sepolia"]
+chains = ["zora_sepolia","base_sepolia","mode_sepolia","superseed_sepolia","lisk_sepolia"]
 
 [token]
 owner_address = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
