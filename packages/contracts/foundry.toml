@@ -1,7 +1,9 @@
 [rpc_endpoints]
-op_chain_a = "http://127.0.0.1:9545"
-op_chain_b = "http://127.0.0.1:9546"
+zora_sepolia = "https://sepolia.rpc.zora.energy"
+base_sepolia = "https://sepolia.base.org"
 lisk_sepolia = "https://rpc.sepolia-api.lisk.com"
+mode_sepolia = "https://sepolia.superseed.xyz"
+superseed_sepolia = "https://53302.rpc.thirdweb.com"
 
 [profile.default]
 src = "src"
