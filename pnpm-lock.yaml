@@ -27,8 +27,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       supersim:
-        specifier: ^0.0.5
-        version: 0.0.5
+        specifier: 0.1.0-alpha.59
+        version: 0.1.0-alpha.59
       wait-port:
         specifier: ^1.1.0
         version: 1.1.0
@@ -5103,8 +5103,8 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  supersim@0.0.5:
-    resolution: {integrity: sha512-h7+Lb0MyHn229Dn625fCdhoQJsge3MVzk3N4EP7CrVcNPVHUFQZBjEl/p/bCIhQM5uBZ5P+76zQKpN6B3EHsiA==}
+  supersim@0.1.0-alpha.59:
+    resolution: {integrity: sha512-HbMTWn02kTP6+uFv8VZX3ALiPFHgG9/uukt34YRYy+h2kTyie5lZ5skbPPvf7NPRtHjsrlsv/NdZygnABImZ6Q==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -11699,7 +11699,7 @@ snapshots:
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
 
-  supersim@0.0.5:
+  supersim@0.1.0-alpha.59:
     dependencies:
       follow-redirects: 1.15.9
     transitivePeerDependencies:
