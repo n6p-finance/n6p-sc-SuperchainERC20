@@ -1,8 +1,6 @@
 [rpc_endpoints]
 zora_sepolia = "https://sepolia.rpc.zora.energy"
-base_sepolia = "https://sepolia.base.org"
-mode_sepolia = "https://sepolia.superseed.xyz"
-superseed_sepolia = "https://53302.rpc.thirdweb.com"
+base_sepolia = "https://base-sepolia-rpc.publicnode.com"
 lisk_sepolia = "https://rpc.sepolia-api.lisk.com"
 
 [profile.default]

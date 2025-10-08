@@ -14,7 +14,6 @@ contract SuperchainERC20Deployer is Script {
         deployConfig = vm.readFile(filePath);
     }
 
-    /// @notice Modifier that wraps a function in broadcasting.
     modifier broadcast() {
         vm.startBroadcast(msg.sender);
         _;
@@ -31,10 +30,19 @@ contract SuperchainERC20Deployer is Script {
 
         for (uint256 i = 0; i < chainsToDeployTo.length; i++) {
             string memory chainToDeployTo = chainsToDeployTo[i];
-
-            console.log("Deploying to chain: ", chainToDeployTo);
+            console.log("Deploying to chain:", chainToDeployTo);
 
             vm.createSelectFork(chainToDeployTo);
+
+            // Check deployer balance only for Sepolia-based chains
+            if (
+                keccak256(bytes(chainToDeployTo)) == keccak256(bytes("zora_sepolia")) ||
+                keccak256(bytes(chainToDeployTo)) == keccak256(bytes("base_sepolia")) ||
+                keccak256(bytes(chainToDeployTo)) == keccak256(bytes("lisk_sepolia"))
+            ) {
+                logDeployerBalance(chainToDeployTo);
+            }
+
             (address _deployedAddress, address _ownerAddr) = deployL2NativeSuperchainERC20();
             deployedAddress = _deployedAddress;
             ownerAddr = _ownerAddr;
@@ -48,19 +56,42 @@ contract SuperchainERC20Deployer is Script {
         string memory name = vm.parseTomlString(deployConfig, ".token.name");
         string memory symbol = vm.parseTomlString(deployConfig, ".token.symbol");
         uint256 decimals = vm.parseTomlUint(deployConfig, ".token.decimals");
+
         require(decimals <= type(uint8).max, "decimals exceeds uint8 range");
+
         bytes memory initCode = abi.encodePacked(
-            type(L2NativeSuperchainERC20).creationCode, abi.encode(ownerAddr_, name, symbol, uint8(decimals))
+            type(L2NativeSuperchainERC20).creationCode,
+            abi.encode(ownerAddr_, name, symbol, uint8(decimals))
         );
+
         address preComputedAddress = vm.computeCreate2Address(_implSalt(), keccak256(initCode));
+
         if (preComputedAddress.code.length > 0) {
             console.log(
-                "L2NativeSuperchainERC20 already deployed at %s", preComputedAddress, "on chain id: ", block.chainid
+                "L2NativeSuperchainERC20 already deployed at %s on chain id: %s",
+                preComputedAddress,
+                block.chainid
             );
             addr_ = preComputedAddress;
         } else {
             addr_ = address(new L2NativeSuperchainERC20{salt: _implSalt()}(ownerAddr_, name, symbol, uint8(decimals)));
-            console.log("Deployed L2NativeSuperchainERC20 at address: ", addr_, "on chain id: ", block.chainid);
+            console.log("Deployed L2NativeSuperchainERC20 at address: %s on chain id: %s", addr_, block.chainid);
+        }
+    }
+
+    function logDeployerBalance(string memory chainName) public view {
+        address deployer = vm.envAddress("DEPLOYER_ADDRESS");
+        uint256 balance = deployer.balance;
+
+        console.log("Checking deployer balance for", chainName);
+        console.log("Deployer address:", deployer);
+        console.log("Deployer balance (wei):", balance);
+        console.log("Deployer balance (ETH):", balance / 1e18);
+
+        if (balance == 0) {
+            console.log("WARNING: Deployer has 0 ETH on", chainName, "- deployment will fail.");
+        } else if (balance < 0.001 ether) {
+            console.log("WARNING: Low balance on", chainName, "- fund deployer before continuing deployment.");
         }
     }
 
@@ -74,7 +105,6 @@ contract SuperchainERC20Deployer is Script {
         vm.writeJson(jsonOutput, "deployment.json");
     }
 
-    /// @notice The CREATE2 salt to be used when deploying the token.
     function _implSalt() internal view returns (bytes32) {
         string memory salt = vm.parseTomlString(deployConfig, ".deploy_config.salt");
         return keccak256(abi.encodePacked(salt));
